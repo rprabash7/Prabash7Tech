@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-fallback-key')
+
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -73,12 +77,28 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database Configuration - SQLite for local, PostgreSQL for production
+DATABASE_TYPE = config('DATABASE_TYPE', default='sqlite')
+
+if DATABASE_TYPE == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:  # PostgreSQL for production
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('POSTGRES_DB_NAME', default='prabash7tech_db'),
+            'USER': config('POSTGRES_DB_USER', default='postgres'),
+            'PASSWORD': config('POSTGRES_DB_PASSWORD', default=''),
+            'HOST': config('POSTGRES_DB_HOST', default='localhost'),
+            'PORT': config('POSTGRES_DB_PORT', default='5432'),
+        }
+    }
+
 
 
 # Password validation
@@ -119,3 +139,7 @@ import os
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media Files Configuration (for uploaded images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div class="container">
+        <h1>Hello World</h1>
+        
+        <div class="people-grid">
+            {% for person in people %}
+            <div class="person-card">
+                {% if person.image %}
+                <img src="{{ person.image.url }}" alt="{{ person.name }}">
+                {% endif %}
+                <h2>{{ person.name }}</h2>
+            </div>
+            {% empty %}
+            <p>No people added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>
